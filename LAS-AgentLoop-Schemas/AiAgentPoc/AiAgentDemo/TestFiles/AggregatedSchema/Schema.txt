@@ -1,0 +1,4 @@
+LoanID (String): Reference to the loan.
+TotalPayments (Decimal): Total amount paid for the loan.
+LastPaymentDate (Date): Date of the most recent payment (format: YYYY-MM-DD).
+RemainingBalance (Decimal): Remaining balance on the loan.

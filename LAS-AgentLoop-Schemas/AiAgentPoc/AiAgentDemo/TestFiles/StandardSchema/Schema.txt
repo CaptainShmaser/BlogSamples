@@ -1,0 +1,6 @@
+PaymentID (String): Unique identifier for the payment.
+LoanID (String): Reference to the loan for which the payment was made.
+PaymentDate (Date): Date of the payment (format: YYYY-MM-DD).
+PaymentAmount (Decimal): Amount paid.
+PaymentMethod (String): Method of payment (e.g., Credit Card, Bank Transfer, Cash).
+LoanBalance (Decimal): Remaining balance on the loan after the payment.

@@ -1,0 +1,4 @@
+PaymentID (String): Unique identifier for the payment.
+LoanID (String): Reference to the loan for which the payment was made.
+PaymentDate (Date): Date of the payment (format: YYYY-MM-DD).
+PaymentAmount (Decimal): Amount paid.

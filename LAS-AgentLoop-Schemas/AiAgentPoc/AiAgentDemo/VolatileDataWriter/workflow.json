@@ -1,0 +1,132 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "actions": {
+            "DataInsertionAgent": {
+                "type": "Agent",
+                "inputs": {
+                    "parameters": {
+                        "deploymentId": "gpt-4.1",
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "You manage insertion of loan data into a SQL Server DB. \n\nYou perform this action by:\n1. Reading the JSON content representing the loan data, which will be provided to you.\n\n2. This file which contains one or more loan updates.\n\n3. You must insert using your InsertLoanRows tool which does so via stored procedure. You must translate the data format of the JSON to the stored procedure parameters which are as follows.  @LoanID NVARCHAR(50),  @TotalPayments DECIMAL(18, 2), @LastPaymentDate DATE,  @RemainingBalance DECIMAL(18, 2)\n"
+                            },
+                            {
+                                "role": "user",
+                                "content": "Loan Data: @{triggerBody()?['JsonPayload']}"
+                            }
+                        ],
+                        "agentModelType": "AzureOpenAI",
+                        "agentModelSettings": {
+                            "agentHistoryReductionSettings": {
+                                "agentHistoryReductionType": "maximumTokenCountReduction",
+                                "maximumTokenCount": 128000
+                            },
+                            "deploymentModelProperties": {
+                                "name": "gpt-4.1",
+                                "format": "OpenAI",
+                                "version": "2025-04-14"
+                            }
+                        }
+                    },
+                    "modelConfigurations": {
+                        "model1": {
+                            "referenceName": "agent"
+                        }
+                    }
+                },
+                "tools": {
+                    "InsertLoanRows": {
+                        "actions": {
+                            "Execute_stored_procedure": {
+                                "type": "ServiceProvider",
+                                "description": "Inserts one or more Loan rows into the Loans table.",
+                                "inputs": {
+                                    "parameters": {
+                                        "storedProcedureName": "InsertLoan",
+                                        "storedProcedureParameters": {
+                                            "LoanID": "@agentParameters('LoanId')",
+                                            "TotalPayments": "@agentParameters('TotalPayments')",
+                                            "LastPaymentDate": "@agentParameters('LastPaymentDate')",
+                                            "RemainingBalance": "@agentParameters('RemainingBalance')"
+                                        },
+                                        "includeEmptyResultSets": true
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "sql",
+                                        "operationId": "executeStoredProcedure",
+                                        "serviceProviderId": "/serviceProviders/sql"
+                                    }
+                                }
+                            }
+                        },
+                        "description": "Use this tool to insert rows of loan data parsed from the LoanFileJson variable.",
+                        "agentParameterSchema": {
+                            "type": "object",
+                            "properties": {
+                                "LoanId": {
+                                    "type": "string",
+                                    "description": "The LoanId of the loan."
+                                },
+                                "TotalPayments": {
+                                    "type": "number",
+                                    "description": "The running total of all payments made so far."
+                                },
+                                "LastPaymentDate": {
+                                    "type": "string",
+                                    "description": "The UTC formatted date of the last payment made."
+                                },
+                                "RemainingBalance": {
+                                    "type": "number",
+                                    "description": "The remaining balance of the loan."
+                                }
+                            },
+                            "required": [
+                                "LoanId",
+                                "TotalPayments",
+                                "LastPaymentDate",
+                                "RemainingBalance"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {},
+                "limit": {
+                    "count": 100
+                }
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                    "statusCode": 200
+                },
+                "runAfter": {
+                    "DataInsertionAgent": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "outputs": {},
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "JsonPayload": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Agentic"
+}

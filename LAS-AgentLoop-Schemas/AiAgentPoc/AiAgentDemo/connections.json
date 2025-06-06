@@ -1,0 +1,37 @@
+{
+  "agentConnections": {
+    "agent": {
+      "displayName": "apiconazopenai",
+      "authentication": {
+        "type": "Key",
+        "key": "@appsetting('agent_openAIKey')"
+      },
+      "endpoint": "@appsetting('agent_openAIEndpoint')",
+      "resourceId": "/subscriptions/deaafdbe-86d0-4677-b3dd-11a421243ea1/resourceGroups/rg-azairesources-dev-uks/providers/Microsoft.CognitiveServices/accounts/ricca-m7eou6a7-swedencentral",
+      "type": "model"
+    },
+    "agent-1": {
+      "displayName": "apiconazopenai",
+      "authentication": {
+        "type": "Key",
+        "key": "@appsetting('agent_11_openAIKey')"
+      },
+      "endpoint": "@appsetting('agent_11_openAIEndpoint')",
+      "resourceId": "/subscriptions/deaafdbe-86d0-4677-b3dd-11a421243ea1/resourceGroups/rg-azairesources-dev-uks/providers/Microsoft.CognitiveServices/accounts/ricca-m7eou6a7-swedencentral",
+      "type": "model"
+    }
+  },
+  "managedApiConnections": {},
+  "serviceProviderConnections": {
+    "sql": {
+      "parameterValues": {
+        "connectionString": "@appsetting('sql_connectionString')"
+      },
+      "parameterSetName": "connectionString",
+      "serviceProvider": {
+        "id": "/serviceProviders/sql"
+      },
+      "displayName": "sqlapicon"
+    }
+  }
+}
